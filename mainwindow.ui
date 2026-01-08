@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1920</width>
+    <height>1080</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1280</width>
+    <height>720</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>多路水下视频监控系统</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(0, 46, 88);
+color: rgb(255, 255, 255);
+font-family: &quot;Microsoft YaHei&quot;;</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,4,0,5">
+    <property name="spacing">
+     <number>5</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="HeaderBar" name="widgetHeader" native="true"/>
+    </item>
+    <item>
+     <widget class="DataView" name="widgetDataView" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>1</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="RulerWidget" name="widgetRuler" native="true">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>50</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>50</height>
+       </size>
+      </property>
+      <property name="visible">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(0, 0, 0, 100);</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="VideoPanorama" name="widgetVide0panorama" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>HeaderBar</class>
+   <extends>QWidget</extends>
+   <header location="global">headerbar.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>DataView</class>
+   <extends>QWidget</extends>
+   <header location="global">dataview.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>VideoPanorama</class>
+   <extends>QWidget</extends>
+   <header location="global">videopanorama.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RulerWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">rulerwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

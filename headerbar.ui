@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>HeaderBar</class>
+ <widget class="QWidget" name="HeaderBar">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1920</width>
+    <height>120</height>
+   </rect>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>120</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* 这会把整个顶部条，包括弹簧区域都染黑 */
+HeaderBar {
+    background-color: rgb(12, 22, 36); /* 这里填您想要的深色值 */
+}
+
+/* 确保标签文字是白色的，且背景透明 */
+QLabel {
+    color: white;
+    background-color: transparent;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="lbDate">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color:white;
+background-color: transparent;</string>
+       </property>
+       <property name="text">
+        <string>2025年12月01日 星期五</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="lblTitle">
+       <property name="font">
+        <font>
+         <family>Microsoft YaHei</family>
+         <pointsize>26</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(180, 200, 220);
+background-color: transparent;</string>
+       </property>
+       <property name="text">
+        <string>多路水下视频监控系统</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="lblWeatherText">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 255, 255);
+background-color: transparent;</string>
+       </property>
+       <property name="text">
+        <string>天气：晴</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="Line" name="lineSeparator">
+     <property name="styleSheet">
+      <string notr="true">QFrame {
+    border: none;
+    background-color: rgb(0, 200, 255); /* 亮蓝色 */
+    max-height: 2px; /* 强制高度为2像素 */
+    height: 2px;
+}</string>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget" native="true">
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(7, 31, 55);</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>1527</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnPreview">
+        <property name="minimumSize">
+         <size>
+          <width>120</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Microsoft YaHei</family>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    color: white;
+    background-color: transparent; /* 透明背景 */
+    border: none;
+    border-bottom: 2px solid transparent; /* 预留底部线条位置 */
+}
+QPushButton:hover {
+    color: rgb(0, 255, 255); /* 悬停变亮蓝 */
+}
+QPushButton:checked {
+    color: rgb(0, 255, 255);
+    border-bottom: 2px solid rgb(0, 255, 255); /* 选中时底部亮条 */
+}</string>
+        </property>
+        <property name="text">
+         <string>实时预览</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnPlayback">
+        <property name="minimumSize">
+         <size>
+          <width>120</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Microsoft YaHei</family>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    color: white;
+    background-color: transparent; /* 透明背景 */
+    border: none;
+    border-bottom: 2px solid transparent; /* 预留底部线条位置 */
+}
+QPushButton:hover {
+    color: rgb(0, 255, 255); /* 悬停变亮蓝 */
+}
+QPushButton:checked {
+    color: rgb(0, 255, 255);
+    border-bottom: 2px solid rgb(0, 255, 255); /* 选中时底部亮条 */
+}</string>
+        </property>
+        <property name="text">
+         <string>视频回放</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnSettings">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Microsoft YaHei</family>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    color: white;
+    background-color: transparent; /* 透明背景 */
+    border: none;
+    border-bottom: 2px solid transparent; /* 预留底部线条位置 */
+}
+QPushButton:hover {
+    color: rgb(0, 255, 255); /* 悬停变亮蓝 */
+}
+QPushButton:checked {
+    color: rgb(0, 255, 255);
+    border-bottom: 2px solid rgb(0, 255, 255); /* 选中时底部亮条 */
+}</string>
+        </property>
+        <property name="text">
+         <string>总体参数设置</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnHistory">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Microsoft YaHei</family>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    color: white;
+    background-color: transparent; /* 透明背景 */
+    border: none;
+    border-bottom: 2px solid transparent; /* 预留底部线条位置 */
+}
+QPushButton:hover {
+    color: rgb(0, 255, 255); /* 悬停变亮蓝 */
+}
+QPushButton:checked {
+    color: rgb(0, 255, 255);
+    border-bottom: 2px solid rgb(0, 255, 255); /* 选中时底部亮条 */
+}</string>
+        </property>
+        <property name="text">
+         <string>历史信息统计</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

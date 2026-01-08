@@ -1,0 +1,1311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DataView</class>
+ <widget class="QWidget" name="DataView">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1898</width>
+    <height>540</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(16, 28, 48);</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,8">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QWidget" name="widgetCameraArea" native="true">
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    background-color: rgba(0, 60, 100, 150);
+    border: 1px solid rgb(0, 200, 255);
+    color: white;
+    border-radius: 4px;
+    font-size: 14px;
+}
+QPushButton:checked {
+    background-color: rgb(0, 200, 255); /* 选中变亮 */
+    color: black;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background-color: rgba(0, 200, 255, 50);
+}</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QWidget" name="widget_2" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QWidget#widget_2 {
+    border-bottom: 2px solid rgb(0, 200, 255); /* 底部亮蓝线条 */
+}
+QLabel {
+    color: rgb(0, 200, 255); /* 标题青色 */
+    font-weight: bold;
+    font-size: 16px;
+}
+QToolButton {
+    border: none;
+    color: white; /* 这里建议以后换成箭头图标 */
+    background: transparent;
+}</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>相机画面控制</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>739</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="widget" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>40</height>
+         </size>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="0">
+          <widget class="QPushButton" name="btnCam1">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>相机1</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QPushButton" name="btnCam2">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>相机2</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QPushButton" name="btnCam3">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>相机3</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QPushButton" name="btnCam4">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>相机4</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QPushButton" name="btnCam5">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>相机5</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QPushButton" name="btnCam6">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>相机6</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QPushButton" name="btnCam7">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>相机7</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QPushButton" name="btnCam8">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>相机8</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QPushButton" name="btnCam9">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>相机9</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QPushButton" name="btnCam10">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>相机10</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QPushButton" name="btnCam11">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>相机11</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="3">
+          <widget class="QPushButton" name="btnCam12">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>相机12</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QPushButton" name="btnCam13">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>相机13</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QPushButton" name="btnPanorama">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>全景视频</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widgetStatsArea" native="true">
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    background-color: rgba(0, 60, 100, 150);
+    border: 1px solid rgb(0, 200, 255);
+    color: white;
+    border-radius: 4px;
+    font-size: 14px;
+}
+QPushButton:checked {
+    background-color: rgb(0, 200, 255); /* 选中变亮 */
+    color: black;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background-color: rgba(0, 200, 255, 50);
+}</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_15" stretch="0,0">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(0, 200, 255); font-size: 16px; font-weight: bold; border-bottom: 2px solid rgb(0, 200, 255); padding-bottom: 5px</string>
+        </property>
+        <property name="text">
+         <string>船只统计信息</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="widContent" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_22">
+         <item>
+          <widget class="QStackedWidget" name="stackeContent">
+           <property name="styleSheet">
+            <string notr="true">background-color: transparent;</string>
+           </property>
+           <widget class="QWidget" name="pageRealTime">
+            <layout class="QVBoxLayout" name="verticalLayout_19" stretch="1,10,1">
+             <property name="spacing">
+              <number>5</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>22</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_23" stretch="1,1,1">
+               <property name="spacing">
+                <number>15</number>
+               </property>
+               <item>
+                <widget class="QFrame" name="frameSpeed">
+                 <property name="styleSheet">
+                  <string notr="true">QFrame#frameSpeed {
+    border: 1px solid rgb(0, 200, 255); /* 青色边框 */
+    border-radius: 8px; /* 圆角 */
+    background-color: rgba(0, 40, 60, 100); /* 半透明深蓝底 */
+}</string>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::Shape::StyledPanel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Shadow::Raised</enum>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_16" stretch="1,9">
+                  <item>
+                   <widget class="QLabel" name="label_3">
+                    <property name="styleSheet">
+                     <string notr="true">color: rgb(255, 255, 255);
+font: 14px &quot;Microsoft YaHei&quot;;
+border: none;</string>
+                    </property>
+                    <property name="text">
+                     <string>当前船只速度曲线</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QWidget" name="chartPlaceholder1" native="true"/>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QFrame" name="frameDist">
+                 <property name="styleSheet">
+                  <string notr="true">QFrame#frameDist{
+    border: 1px solid rgb(0, 200, 255); /* 青色边框 */
+    border-radius: 8px; /* 圆角 */
+    background-color: rgba(0, 40, 60, 100); /* 半透明深蓝底 */
+}</string>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::Shape::StyledPanel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Shadow::Raised</enum>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_17" stretch="1,9">
+                  <item>
+                   <widget class="QLabel" name="label_5">
+                    <property name="styleSheet">
+                     <string notr="true">color: rgb(255, 255, 255);
+font: 14px &quot;Microsoft YaHei&quot;;
+border: none;</string>
+                    </property>
+                    <property name="text">
+                     <string>当前船只位移曲线</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QWidget" name="chartPlaceholder2" native="true"/>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QFrame" name="frameInfo">
+                 <property name="styleSheet">
+                  <string notr="true">QFrame#frameInfo{
+    border: 1px solid rgb(0, 200, 255); /* 青色边框 */
+    border-radius: 8px; /* 圆角 */
+    background-color: rgba(0, 40, 60, 100); /* 半透明深蓝底 */
+}</string>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::Shape::StyledPanel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Shadow::Raised</enum>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_18">
+                  <item>
+                   <widget class="QLabel" name="label_7">
+                    <property name="styleSheet">
+                     <string notr="true">color: white; font-weight: bold; font-size: 16px; border: none;</string>
+                    </property>
+                    <property name="text">
+                     <string>当前船只信息</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QTableWidget" name="tableWidget">
+                    <property name="focusPolicy">
+                     <enum>Qt::FocusPolicy::NoFocus</enum>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">/* 1. 表格整体透明 */
+QTableWidget {
+    background-color: transparent; /* 背景完全透明 */
+    border: none; /* 去掉四周的大边框 */
+    color: rgb(0, 230, 255); /* 默认文字颜色：青色 */
+    font-size: 14px;
+}
+
+/* 2. 单元格样式（画线核心） */
+QTableWidget::item {
+    /* 底部画一条淡淡的青色线 */
+    border-bottom: 1px solid rgba(0, 200, 255, 50); 
+    
+    /* 右边画一条竖线（分割左右两列） */
+    border-right: 1px solid rgba(0, 200, 255, 30);
+    
+    /* 稍微撑大一点，不让线贴得太紧 */
+    padding: 5px; 
+}</string>
+                    </property>
+                    <property name="selectionMode">
+                     <enum>QAbstractItemView::SelectionMode::NoSelection</enum>
+                    </property>
+                    <property name="showGrid">
+                     <bool>false</bool>
+                    </property>
+                    <attribute name="horizontalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                    <attribute name="verticalHeaderVisible">
+                     <bool>false</bool>
+                    </attribute>
+                    <row>
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </row>
+                    <row>
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </row>
+                    <column>
+                     <property name="text">
+                      <string>属性</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>数据</string>
+                     </property>
+                    </column>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>22</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="pagePlayback"/>
+           <widget class="QWidget" name="pageSettings">
+            <property name="styleSheet">
+             <string notr="true">/* --- 分组框样式 --- */
+QGroupBox {
+    border: 1px solid rgb(0, 100, 180);
+    border-radius: 6px;
+    margin-top: 10px; /* 留出标题空间 */
+    font-weight: bold;
+    color: rgb(0, 255, 255); /* 标题青色 */
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 5px;
+    left: 10px;
+}
+
+/* --- 输入框样式 (SpinBox, LineEdit, ComboBox) --- */
+QDoubleSpinBox, QSpinBox, QLineEdit, QComboBox {
+    background-color: rgba(0, 30, 50, 200);
+    border: 1px solid rgb(0, 100, 180);
+    color: white;
+    padding: 4px;
+    border-radius: 2px;
+    min-height: 24px;
+}
+QDoubleSpinBox:hover, QLineEdit:hover, QComboBox:hover {
+    border: 1px solid rgb(0, 255, 255);
+}
+
+/* --- 按钮样式 (线框风格) --- */
+QPushButton {
+    background-color: transparent;
+    border: 1px solid rgb(0, 160, 230);
+    color: rgb(0, 220, 255);
+    border-radius: 4px;
+    padding: 5px 15px;
+    min-height: 24px;
+}
+QPushButton:hover {
+    background-color: rgba(0, 200, 255, 50);
+    color: white;
+}
+QPushButton:pressed {
+    background-color: rgb(0, 160, 230);
+    color: black;
+}
+
+/* --- 日志框 --- */
+QTextEdit {
+    background-color: rgba(0, 0, 0, 150);
+    border: 1px solid gray;
+    color: #cccccc;
+    font-family: &quot;Consolas&quot;, &quot;Microsoft YaHei&quot;;
+}</string>
+            </property>
+            <widget class="QWidget" name="widget_4" native="true">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>1471</width>
+               <height>34</height>
+              </rect>
+             </property>
+             <widget class="QSpinBox" name="sbTargetCamId">
+              <property name="geometry">
+               <rect>
+                <x>180</x>
+                <y>0</y>
+                <width>131</width>
+                <height>34</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QCheckBox" name="chkGlobalScope">
+              <property name="geometry">
+               <rect>
+                <x>370</x>
+                <y>10</y>
+                <width>193</width>
+                <height>23</height>
+               </rect>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">color: rgb(255, 255, 255);</string>
+              </property>
+              <property name="text">
+               <string>应用到所有相机 (Global)</string>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_4">
+              <property name="geometry">
+               <rect>
+                <x>80</x>
+                <y>10</y>
+                <width>81</width>
+                <height>19</height>
+               </rect>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">color: rgb(255, 255, 255);</string>
+              </property>
+              <property name="text">
+               <string>选择相机id</string>
+              </property>
+             </widget>
+            </widget>
+            <widget class="QGroupBox" name="groupBox_2">
+             <property name="geometry">
+              <rect>
+               <x>1000</x>
+               <y>80</y>
+               <width>321</width>
+               <height>261</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QGroupBox {
+    /* 深蓝半透明背景，区分区域 */
+    background-color: rgba(0, 40, 60, 100);
+    border: 1px solid rgb(0, 120, 200);
+    border-radius: 6px;
+    margin-top: 20px; /* 标题不压线 */
+    padding-top: 10px;
+    color: rgb(0, 255, 255);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center; /* 标题居中，更有科幻感 */
+    padding: 0 10px;
+    background-color: rgb(16, 28, 48); /* 标题背景与底色一致，遮挡线条 */
+    color: rgb(255, 200, 0); /* 标题换个醒目的橙黄色 */
+}</string>
+             </property>
+             <property name="title">
+              <string>OSD与抓拍</string>
+             </property>
+             <widget class="QPushButton" name="btnSnapshot">
+              <property name="geometry">
+               <rect>
+                <x>226</x>
+                <y>144</y>
+                <width>60</width>
+                <height>36</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>抓拍</string>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="btnPickColor">
+              <property name="geometry">
+               <rect>
+                <x>129</x>
+                <y>70</y>
+                <width>60</width>
+                <height>36</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>选色</string>
+              </property>
+             </widget>
+             <widget class="QCheckBox" name="chkCrosshair">
+              <property name="geometry">
+               <rect>
+                <x>12</x>
+                <y>76</y>
+                <width>87</width>
+                <height>23</height>
+               </rect>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">color: rgb(255, 255, 255);</string>
+              </property>
+              <property name="text">
+               <string>十字光标</string>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="lineEdit">
+              <property name="geometry">
+               <rect>
+                <x>12</x>
+                <y>145</y>
+                <width>150</width>
+                <height>34</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="btnSetCrosshair">
+              <property name="geometry">
+               <rect>
+                <x>230</x>
+                <y>70</y>
+                <width>60</width>
+                <height>36</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>应用</string>
+              </property>
+             </widget>
+            </widget>
+            <widget class="QGroupBox" name="groupBox">
+             <property name="geometry">
+              <rect>
+               <x>550</x>
+               <y>80</y>
+               <width>371</width>
+               <height>261</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QGroupBox {
+    /* 深蓝半透明背景，区分区域 */
+    background-color: rgba(0, 40, 60, 100);
+    border: 1px solid rgb(0, 120, 200);
+    border-radius: 6px;
+    margin-top: 20px; /* 标题不压线 */
+    padding-top: 10px;
+    color: rgb(0, 255, 255);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center; /* 标题居中，更有科幻感 */
+    padding: 0 10px;
+    background-color: rgb(16, 28, 48); /* 标题背景与底色一致，遮挡线条 */
+    color: rgb(255, 200, 0); /* 标题换个醒目的橙黄色 */
+}</string>
+             </property>
+             <property name="title">
+              <string>触发与同步</string>
+             </property>
+             <widget class="QComboBox" name="comboTriggerMode">
+              <property name="geometry">
+               <rect>
+                <x>70</x>
+                <y>60</y>
+                <width>50</width>
+                <height>34</height>
+               </rect>
+              </property>
+              <item>
+               <property name="text">
+                <string>Off</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>On</string>
+               </property>
+              </item>
+             </widget>
+             <widget class="QPushButton" name="btnSetTrigMode">
+              <property name="geometry">
+               <rect>
+                <x>210</x>
+                <y>50</y>
+                <width>88</width>
+                <height>36</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>设置模式</string>
+              </property>
+             </widget>
+             <widget class="QComboBox" name="comboTriggerSource">
+              <property name="geometry">
+               <rect>
+                <x>50</x>
+                <y>120</y>
+                <width>91</width>
+                <height>34</height>
+               </rect>
+              </property>
+              <item>
+               <property name="text">
+                <string>Software</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Line0</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Line1</string>
+               </property>
+              </item>
+             </widget>
+             <widget class="QPushButton" name="btnSetTrigSource">
+              <property name="geometry">
+               <rect>
+                <x>210</x>
+                <y>120</y>
+                <width>102</width>
+                <height>36</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>设置触发源</string>
+              </property>
+             </widget>
+             <widget class="QComboBox" name="comboTriggerActive">
+              <property name="geometry">
+               <rect>
+                <x>40</x>
+                <y>180</y>
+                <width>110</width>
+                <height>34</height>
+               </rect>
+              </property>
+              <item>
+               <property name="text">
+                <string>RisingEdge</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>FallingEdge</string>
+               </property>
+              </item>
+             </widget>
+             <widget class="QPushButton" name="btnSetTrigActive">
+              <property name="geometry">
+               <rect>
+                <x>210</x>
+                <y>180</y>
+                <width>102</width>
+                <height>36</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>设置触发沿</string>
+              </property>
+             </widget>
+            </widget>
+            <widget class="QGroupBox" name="groupBox_3">
+             <property name="geometry">
+              <rect>
+               <x>20</x>
+               <y>80</y>
+               <width>451</width>
+               <height>261</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QGroupBox {
+    /* 深蓝半透明背景，区分区域 */
+    background-color: rgba(0, 40, 60, 100);
+    border: 1px solid rgb(0, 120, 200);
+    border-radius: 6px;
+    margin-top: 20px; /* 标题不压线 */
+    padding-top: 10px;
+    color: rgb(0, 255, 255);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center; /* 标题居中，更有科幻感 */
+    padding: 0 10px;
+    background-color: rgb(16, 28, 48); /* 标题背景与底色一致，遮挡线条 */
+    color: rgb(255, 200, 0); /* 标题换个醒目的橙黄色 */
+}</string>
+             </property>
+             <property name="title">
+              <string>图像采集设置</string>
+             </property>
+             <widget class="QDoubleSpinBox" name="dsbFps">
+              <property name="geometry">
+               <rect>
+                <x>20</x>
+                <y>70</y>
+                <width>81</width>
+                <height>34</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="btnSetFps">
+              <property name="geometry">
+               <rect>
+                <x>130</x>
+                <y>70</y>
+                <width>88</width>
+                <height>36</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>设置帧率</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="dsbZoom">
+              <property name="geometry">
+               <rect>
+                <x>250</x>
+                <y>70</y>
+                <width>72</width>
+                <height>34</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="btnSetZoom">
+              <property name="geometry">
+               <rect>
+                <x>360</x>
+                <y>70</y>
+                <width>60</width>
+                <height>36</height>
+               </rect>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>36</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>缩放</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="dsbExposure">
+              <property name="geometry">
+               <rect>
+                <x>20</x>
+                <y>130</y>
+                <width>81</width>
+                <height>34</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="btnSetExposure">
+              <property name="geometry">
+               <rect>
+                <x>130</x>
+                <y>130</y>
+                <width>88</width>
+                <height>36</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>设置曝光</string>
+              </property>
+             </widget>
+             <widget class="QComboBox" name="comboPixelFormat">
+              <property name="geometry">
+               <rect>
+                <x>250</x>
+                <y>130</y>
+                <width>84</width>
+                <height>34</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="btnSetFormat">
+              <property name="geometry">
+               <rect>
+                <x>350</x>
+                <y>130</y>
+                <width>88</width>
+                <height>36</height>
+               </rect>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>36</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>格式选择</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="dsbGain">
+              <property name="geometry">
+               <rect>
+                <x>20</x>
+                <y>190</y>
+                <width>81</width>
+                <height>34</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="btnSetGain">
+              <property name="geometry">
+               <rect>
+                <x>130</x>
+                <y>190</y>
+                <width>88</width>
+                <height>36</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>设置增益</string>
+              </property>
+             </widget>
+            </widget>
+           </widget>
+           <widget class="QWidget" name="pageHistory">
+            <layout class="QVBoxLayout" name="verticalLayout_20">
+             <item>
+              <widget class="QTableWidget" name="tableHistory">
+               <property name="styleSheet">
+                <string notr="true">/* --- 1. 表格整体 --- */
+QTableWidget {
+    background-color: transparent; /* 背景透明 */
+    border: 1px solid rgb(0, 100, 180); /* 外边框 */
+    color: white; /* 内容文字白色 */
+    gridline-color: transparent; /* 去掉默认网格线，我们自己画 */
+    font-size: 14px;
+}
+
+/* --- 2. 表头样式 (解决白条问题) --- */
+QHeaderView::section {
+    background-color: rgba(0, 40, 60, 255); /* 深蓝背景 */
+    color: rgb(0, 255, 255); /* 青色文字 */
+    padding: 8px;
+    border: none;
+    border-bottom: 2px solid rgb(0, 200, 255); /* 表头下方的亮线 */
+    font-weight: bold;
+    font-size: 15px;
+}
+
+/* --- 3. 单元格样式 --- */
+QTableWidget::item {
+    border-bottom: 1px solid rgba(0, 200, 255, 40); /* 每行下面淡淡的线 */
+    padding-left: 5px;
+}
+
+/* --- 4. 选中行的样式 --- */
+QTableWidget::item:selected {
+    background-color: rgba(0, 200, 255, 50); /* 选中变亮 */
+    color: white;
+}
+
+/* --- 5. 左上角那个小方块 --- */
+QTableCornerButton::section {
+    background-color: rgba(0, 40, 60, 255);
+    border: none;
+    border-bottom: 2px solid rgb(0, 200, 255);
+}</string>
+               </property>
+               <attribute name="verticalHeaderVisible">
+                <bool>false</bool>
+               </attribute>
+               <column>
+                <property name="text">
+                 <string>新建列</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>时间</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>速度</string>
+                </property>
+               </column>
+               <column>
+                <property name="text">
+                 <string>加速度</string>
+                </property>
+               </column>
+              </widget>
+             </item>
+             <item>
+              <widget class="QWidget" name="widHistoryControl" native="true">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>50</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">/* --- 1. 修复中间的页码 Label (消除白块) --- */
+QLabel {
+    color: rgb(0, 255, 255); /* 青色文字 */
+    font-weight: bold;
+    font-size: 16px;
+    background-color: transparent; /* 关键：背景透明！ */
+    border: none;
+    padding: 0 20px; /* 左右留点空隙 */
+}
+
+/* --- 2. 美化翻页按钮 (科幻方块) --- */
+QPushButton {
+    background-color: transparent;
+    border: 1px solid rgb(0, 140, 200); /* 青色边框 */
+    color: rgb(0, 200, 255); /* 青色文字 */
+    border-radius: 4px;
+    padding: 5px 15px; /* 稍微撑大一点 */
+    font-family: &quot;Microsoft YaHei&quot;;
+    font-size: 14px;
+}
+
+/* 鼠标悬停 */
+QPushButton:hover {
+    background-color: rgba(0, 200, 255, 50);
+    border: 1px solid rgb(0, 255, 255);
+    color: white;
+}
+
+/* 鼠标按下 */
+QPushButton:pressed {
+    background-color: rgb(0, 180, 230);
+    color: black;
+}
+
+/* 禁用状态 (比如第一页时) */
+QPushButton:disabled {
+    border: 1px solid rgb(80, 80, 80);
+    color: rgb(100, 100, 100);
+}</string>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_24">
+                <item>
+                 <spacer name="horizontalSpacer_17">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>316</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="btnHisPrev">
+                  <property name="text">
+                   <string>上一页</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="lblPageInfo">
+                  <property name="styleSheet">
+                   <string notr="true"/>
+                  </property>
+                  <property name="text">
+                   <string>1 / 1</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="btnHisNext">
+                  <property name="text">
+                   <string>下一页</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_18">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>315</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
