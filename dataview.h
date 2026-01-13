@@ -101,6 +101,8 @@ private slots:
     // --- 接口回调槽函数 ---
     void onApiResult(bool success, const QString &apiName, const QJsonObject &data, const QString &errorMsg);
     void onSnapshotReceived(const QPixmap &pixmap);
+    void onServiceInfoReceived(const ServiceInfo &info);
+    void onHealthInfoReceived(const HealthInfo &info);
 };
 
 #endif // DATAVIEW_H

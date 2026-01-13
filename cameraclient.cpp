@@ -1,5 +1,52 @@
 #include "cameraclient.h"
 #include <QJsonArray>
+#include <QVariant>
+
+static PipelineStatus parsePipelineStatus(const QJsonObject &json) {
+    PipelineStatus status;
+    status.running = json["running"].toBool();
+    status.last_seq = json["last_seq"].toVariant().toLongLong();
+    status.last_ts_ns = json["last_ts_ns"].toVariant().toLongLong();
+    // last_error can be null, toString() handles it gracefully by returning empty string
+    status.last_error = json["last_error"].isNull() ? "" : json["last_error"].toString();
+    return status;
+}
+
+static ServiceConfig parseServiceConfig(const QJsonObject &json) {
+    ServiceConfig config;
+    config.camera_count = json["camera_count"].toInt();
+    config.target_fps = json["target_fps"].toInt();
+    config.jpeg_quality = json["jpeg_quality"].toInt();
+    config.pause_when_no_clients = json["pause_when_no_clients"].toBool();
+    config.source_video = json["source_video"].isNull() ? "" : json["source_video"].toString();
+    return config;
+}
+
+static ServiceInfo parseServiceInfo(const QJsonObject &json) {
+    ServiceInfo info;
+    info.service = json["service"].toString();
+    QJsonArray routes = json["routes"].toArray();
+    for (const auto &route : routes) {
+        info.routes.append(route.toString());
+    }
+    info.clients = json["clients"].toInt();
+    info.fps_ema = json["fps_ema"].toDouble();
+    info.encoded_seq = json["encoded_seq"].toVariant().toLongLong();
+    info.pipeline = parsePipelineStatus(json["pipeline"].toObject());
+    info.config = parseServiceConfig(json["config"].toObject());
+    return info;
+}
+
+static HealthInfo parseHealthInfo(const QJsonObject &json) {
+    HealthInfo info;
+    info.clients = json["clients"].toInt();
+    info.fps_ema = json["fps_ema"].toDouble();
+    info.encoded_seq = json["encoded_seq"].toVariant().toLongLong();
+    info.encoded_ts_ns = json["encoded_ts_ns"].toVariant().toLongLong();
+    info.last_error = json["last_error"].isNull() ? "" : json["last_error"].toString();
+    info.pipeline = parsePipelineStatus(json["pipeline"].toObject());
+    return info;
+}
 
 CameraClient::CameraClient(QObject *parent)
     : QObject{parent}
@@ -89,7 +136,8 @@ void CameraClient::getServiceConfig()
         reply->deleteLater();
         if(reply->error() == QNetworkReply::NoError){
             QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
-            emit serviceConfigReceived(doc.object());
+            QJsonObject obj = doc.object();
+            emit serviceInfoReceived(parseServiceInfo(obj));
         }else{
             emit controlResult(false, "/", QJsonObject(), reply->errorString());
         }
@@ -109,7 +157,8 @@ void CameraClient::getHealthStatus()
         reply->deleteLater();
         if(reply->error() == QNetworkReply::NoError){
             QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
-            emit healthStatusReceived(doc.object());
+            QJsonObject obj = doc.object();
+            emit healthInfoReceived(parseHealthInfo(obj));
         }else{
             emit controlResult(false, "/health", QJsonObject(), reply->errorString());
         }
@@ -126,7 +175,8 @@ void CameraClient::getSnapshot()
 
     connect(reply, &QNetworkReply::finished, this, [=]() {
         reply->deleteLater();
-        if (reply->error() == QNetworkReply::NoError) {
+        int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (reply->error() == QNetworkReply::NoError && statusCode == 200) {
             QByteArray data = reply->readAll();
             QPixmap pixmap;
             if (pixmap.loadFromData(data, "JPEG")) {
@@ -135,9 +185,119 @@ void CameraClient::getSnapshot()
                 emit controlResult(false, "/snapshot", QJsonObject(), "Failed to load JPEG data");
             }
         } else {
-            emit controlResult(false, "/snapshot", QJsonObject(), reply->errorString());
+            QString errStr = (statusCode == 503) ? "Service Unavailable (No Frame)" : reply->errorString();
+            emit controlResult(false, "/snapshot", QJsonObject(), errStr);
         }
     });
+}
+
+/**
+ * @brief GET /mjpeg 获取最新一帧 JPEG 抓图
+ */
+
+void CameraClient::startMjpegStream()
+{
+    if (m_mjpegReply) {
+        return;
+    }
+    QUrl url(getMjpegStreamUrl());
+    QNetworkRequest request(url);
+    request.setRawHeader("Accept", "multipart/x-mixed-replace");
+    m_mjpegBuffer.clear();
+    m_mjpegReply = m_manager->get(request);
+
+    connect(m_mjpegReply, &QNetworkReply::readyRead, this, &CameraClient::handleMjpegReadyRead);
+    connect(m_mjpegReply, &QNetworkReply::errorOccurred, this, [=](QNetworkReply::NetworkError){
+        emit controlResult(false, "/mjpeg", QJsonObject(), m_mjpegReply ? m_mjpegReply->errorString() : QStringLiteral("stream error"));
+    });
+    connect(m_mjpegReply, &QNetworkReply::finished, this, [=]() {
+        if (m_mjpegReply) {
+            m_mjpegReply->deleteLater();
+            m_mjpegReply = nullptr;
+        }
+    });
+}
+
+void CameraClient::stopMjpegStream()
+{
+    if (!m_mjpegReply) {
+        return;
+    }
+    disconnect(m_mjpegReply, nullptr, this, nullptr);
+    m_mjpegReply->abort();
+    m_mjpegReply->deleteLater();
+    m_mjpegReply = nullptr;
+    m_mjpegBuffer.clear();
+}
+
+void CameraClient::handleMjpegReadyRead()
+{
+    if (!m_mjpegReply) {
+        return;
+    }
+    m_mjpegBuffer.append(m_mjpegReply->readAll());
+
+    while (true) {
+        int boundaryIdx = m_mjpegBuffer.indexOf("--frame");
+        if (boundaryIdx < 0) {
+            break;
+        }
+        if (boundaryIdx > 0) {
+            m_mjpegBuffer.remove(0, boundaryIdx);
+        }
+
+        int boundaryLineEnd = m_mjpegBuffer.indexOf("\r\n");
+        if (boundaryLineEnd < 0) {
+            break;
+        }
+        int headersStart = boundaryLineEnd + 2;
+        int headersEnd = m_mjpegBuffer.indexOf("\r\n\r\n", headersStart);
+        if (headersEnd < 0) {
+            break;
+        }
+
+        QByteArray headersBytes = m_mjpegBuffer.mid(headersStart, headersEnd - headersStart);
+        QString headersStr = QString::fromLatin1(headersBytes);
+        int contentLength = -1;
+        const auto lines = headersStr.split("\r\n");
+        for (const QString &line : lines) {
+            if (line.startsWith("Content-Length:", Qt::CaseInsensitive)) {
+                contentLength = line.section(':', 1, 1).trimmed().toInt();
+                break;
+            }
+        }
+
+        if (contentLength <= 0) {
+            emit controlResult(false, "/mjpeg", QJsonObject(), QStringLiteral("missing Content-Length"));
+            // 丢弃到头结束，尝试继续
+            m_mjpegBuffer.remove(0, headersEnd + 4);
+            continue;
+        }
+
+        // 跳过头部
+        m_mjpegBuffer.remove(0, headersEnd + 4);
+
+        if (m_mjpegBuffer.size() < contentLength) {
+            // 数据未到齐，等待下一次 readyRead
+            break;
+        }
+
+        QByteArray imageData = m_mjpegBuffer.left(contentLength);
+        m_mjpegBuffer.remove(0, contentLength);
+
+        // 可选跳过帧末尾 CRLF
+        if (m_mjpegBuffer.startsWith("\r\n")) {
+            m_mjpegBuffer.remove(0, 2);
+        }
+
+        QPixmap pixmap;
+        if (pixmap.loadFromData(imageData, "JPEG")) {
+            emit mjpegFrameReceived(pixmap);
+        } else {
+            emit controlResult(false, "/mjpeg", QJsonObject(), QStringLiteral("failed to decode JPEG frame"));
+        }
+        // 继续循环解析可能已到达的下一帧
+    }
 }
 
 // ==========================================

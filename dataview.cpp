@@ -172,6 +172,42 @@ DataView::DataView(QWidget *parent)
     ui->lineEdit->setPlaceholderText("D:/img/1.jpg");
     ui->sbTargetCamId->setRange(1, 13);
     ui->sbTargetCamId->setValue(1);
+
+    // ===============================================
+    // 【新增】连接设置页面的按钮信号
+    // ===============================================
+
+    // --- 图像采集 ---
+    connect(ui->btnSetFps, &QPushButton::clicked, this, &DataView::on_btnSetFps_clicked);
+    connect(ui->btnSetExposure, &QPushButton::clicked, this, &DataView::on_btnSetExposure_clicked);
+    connect(ui->btnSetGain, &QPushButton::clicked, this, &DataView::on_btnSetGain_clicked);
+    connect(ui->btnSetZoom, &QPushButton::clicked, this, &DataView::on_btnSetZoom_clicked);
+    connect(ui->btnSetFormat, &QPushButton::clicked, this, &DataView::on_btnSetFormat_clicked);
+
+    // --- 触发设置 ---
+    connect(ui->btnSetTrigMode, &QPushButton::clicked, this, &DataView::on_btnSetTrigMode_clicked);
+    connect(ui->btnSetTrigSource, &QPushButton::clicked, this, &DataView::on_btnSetTrigSource_clicked);
+    connect(ui->btnSetTrigActive, &QPushButton::clicked, this, &DataView::on_btnSetTrigActive_clicked);
+
+    // --- OSD与抓拍 ---
+    connect(ui->btnSetCrosshair, &QPushButton::clicked, this, &DataView::on_btnSetCrosshair_clicked);
+    connect(ui->btnPickColor, &QPushButton::clicked, this, &DataView::on_btnPickColor_clicked);
+    connect(ui->btnSnapshot, &QPushButton::clicked, this, &DataView::on_btnSnapshot_clicked);
+
+    // --- 新增: GET与Health测试按钮 ---
+    connect(ui->btnget, &QPushButton::clicked, this, [=](){ m_api->getServiceConfig(); });
+    connect(ui->btnhealth, &QPushButton::clicked, this, [=](){ m_api->getHealthStatus(); });
+
+    // ===============================================
+    // 【新增】启动时自动获取一次当前配置
+    // ===============================================
+    // 连接获取配置的成功信号 -> 更新UI
+    connect(m_api, &CameraClient::serviceInfoReceived, this, &DataView::onServiceInfoReceived);
+    connect(m_api, &CameraClient::healthInfoReceived, this, &DataView::onHealthInfoReceived);
+
+    // 发送请求
+    m_api->getServiceConfig();
+    m_api->getHealthStatus();
 }
 
 DataView::~DataView()
@@ -574,4 +610,51 @@ void DataView::on_btnPickColor_clicked()
                             .arg(color.lightness() > 128 ? "black" : "white"); // 自动调整文字颜色
         ui->btnPickColor->setStyleSheet(style);
     }
+}
+
+void DataView::onServiceInfoReceived(const ServiceInfo &info)
+{
+    // Update FPS spinbox
+    ui->dsbFps->setValue(info.config.target_fps);
+
+    // Format log message
+    QString msg = QString("=== 服务信息 ===\n"
+                          "Service: %1\n"
+                          "Routes: %2\n"
+                          "Clients: %3\n"
+                          "FPS (EMA): %4\n"
+                          "Encoded Seq: %5\n"
+                          "Pipeline: %6 (Seq: %7, Err: %8)\n"
+                          "Config: CamCount=%9, TargetFPS=%10, Quality=%11\n")
+            .arg(info.service)
+            .arg(info.routes.join(", "))
+            .arg(info.clients)
+            .arg(info.fps_ema, 0, 'f', 1)
+            .arg(info.encoded_seq)
+            .arg(info.pipeline.running ? "Running" : "Stopped")
+            .arg(info.pipeline.last_seq)
+            .arg(info.pipeline.last_error.isEmpty() ? "None" : info.pipeline.last_error)
+            .arg(info.config.camera_count)
+            .arg(info.config.target_fps)
+            .arg(info.config.jpeg_quality);
+
+    ui->txtApiLog->append(msg);
+}
+
+void DataView::onHealthInfoReceived(const HealthInfo &info)
+{
+    QString msg = QString("=== 健康状态 ===\n"
+                          "Clients: %1\n"
+                          "FPS: %2\n"
+                          "Seq: %3 (TS: %4)\n"
+                          "Error: %5\n"
+                          "Pipeline: %6\n")
+            .arg(info.clients)
+            .arg(info.fps_ema, 0, 'f', 1)
+            .arg(info.encoded_seq)
+            .arg(info.encoded_ts_ns)
+            .arg(info.last_error.isEmpty() ? "None" : info.last_error)
+            .arg(info.pipeline.running ? "OK" : "Stopped");
+
+     ui->txtApiLog->append(msg);
 }
