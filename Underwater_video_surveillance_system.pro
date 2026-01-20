@@ -1,8 +1,8 @@
-QT       += core gui charts multimedia multimediawidgets sql network
+QT       += core gui charts multimedia multimediawidgets sql network websockets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++17
+CONFIG += c++11
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -16,7 +16,9 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     rulerwidget.cpp \
-    videopanorama.cpp
+    videopanorama.cpp \
+    websocketclient.cpp \
+    streamvideowidget.cpp
 
 HEADERS += \
     Database/dbmanager.h \
@@ -25,7 +27,9 @@ HEADERS += \
     headerbar.h \
     mainwindow.h \
     rulerwidget.h \
-    videopanorama.h
+    videopanorama.h \
+    websocketclient.h \
+    streamvideowidget.h
 
 FORMS += \
     dataview.ui \

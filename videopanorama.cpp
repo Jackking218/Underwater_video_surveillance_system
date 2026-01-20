@@ -10,6 +10,7 @@
 #include <QShowEvent>
 #include <QPoint>
 #include <QDebug>
+#include <QSettings>
 
 VideoPanorama::VideoPanorama(QWidget *parent)
     : QWidget(parent)
@@ -24,47 +25,25 @@ VideoPanorama::VideoPanorama(QWidget *parent)
     // 初始化指针数组
     for(int i=0; i<3; i++) {
         m_multiVideoWidgets[i] = nullptr;
-        m_multiPlayers[i] = nullptr;
-        m_multiAudio[i] = nullptr;
         m_multiLabels[i] = nullptr;
     }
 
     // =========================================================
-    // 1. 初始化全景播放器
+    // 1. 初始化全景播放器 (StreamVideoWidget)
     // =========================================================
-    m_videoWidget = new QVideoWidget(ui->pagePanorama);
-    m_videoWidget->setAspectRatioMode(Qt::IgnoreAspectRatio);
+    m_videoWidget = new StreamVideoWidget(ui->pagePanorama);
+    // m_videoWidget->setAspectRatioMode(Qt::IgnoreAspectRatio); // StreamVideoWidget 内部自适应
     m_videoWidget->show(); // 必须show
 
-    m_player = new QMediaPlayer(this);
-    m_audioOutput = new QAudioOutput(this);
-    m_player->setVideoOutput(m_videoWidget);
-    m_player->setAudioOutput(m_audioOutput);
-
-    // 获取路径
-    QString appDir = QCoreApplication::applicationDirPath();
-
-    // 加载全景视频
-    QString panoramaPath = appDir + "/videos/testVideo_32_9.mp4";
-    if (QFile::exists(panoramaPath)) {
-        m_player->setSource(QUrl::fromLocalFile(panoramaPath));
-        m_audioOutput->setVolume(0);
-        m_player->setLoops(QMediaPlayer::Infinite);
-        m_player->play();
-    } else {
-        qDebug() << "[严重错误] 找不到全景视频：" << panoramaPath;
-    }
+    // TODO: 全景视频 WebSocket Client 初始化
+    // m_panoramaClient = new WebSocketClient(this);
+    m_Client = new WebSocketClient(this);
 
     // =========================================================
     // 2. 初始化三摄分屏播放器
     // =========================================================
-    QString camVideoPath = appDir + "/videos/test-2048_2048.mp4"; // 检查这里的文件名！
-
-    // 检查分屏视频是否存在
-    bool camVideoExists = QFile::exists(camVideoPath);
-    if(!camVideoExists) qDebug() << "[严重错误] 找不到相机测试视频：" << camVideoPath;
-
-    // 【关键修复】如果 pageMultiCam 在UI里没设布局，这里补一个，防止崩溃或显示错误
+    
+    // 【关键修复】如果 pageMultiCam 在UI里没设布局，这里补一个
     if (!ui->pageMultiCam->layout()) {
         QHBoxLayout *layout = new QHBoxLayout(ui->pageMultiCam);
         layout->setSpacing(20);
@@ -78,10 +57,9 @@ VideoPanorama::VideoPanorama(QWidget *parent)
         vbox->setContentsMargins(0, 0, 0, 0);
         vbox->setSpacing(5);
 
-        // 创建视频窗口
-        m_multiVideoWidgets[i] = new QVideoWidget(container);
-        m_multiVideoWidgets[i]->setAspectRatioMode(Qt::KeepAspectRatio); // 保持正方形比例
-        // m_multiVideoWidgets[i]->setStyleSheet("background-color: black;"); // 可选：强制黑底
+        // 创建视频窗口 (StreamVideoWidget)
+        m_multiVideoWidgets[i] = new StreamVideoWidget(container);
+        // m_multiVideoWidgets[i]->setStyleSheet("background-color: black;"); // 默认已黑底
 
         // 创建标签
         m_multiLabels[i] = new QLabel(container);
@@ -95,30 +73,8 @@ VideoPanorama::VideoPanorama(QWidget *parent)
 
         // 将容器放入页面
         ui->pageMultiCam->layout()->addWidget(container);
-
-        // 创建播放器
-        m_multiPlayers[i] = new QMediaPlayer(this);
-        m_multiAudio[i] = new QAudioOutput(this);
-        m_multiPlayers[i]->setVideoOutput(m_multiVideoWidgets[i]);
-        m_multiPlayers[i]->setAudioOutput(m_multiAudio[i]);
-        m_multiAudio[i]->setVolume(0);
-
-        // 设置源并预备播放
-        if (camVideoExists) {
-            m_multiPlayers[i]->setSource(QUrl::fromLocalFile(camVideoPath));
-            m_multiPlayers[i]->setLoops(QMediaPlayer::Infinite);
-            m_multiPlayers[i]->play(); // 默认播放，依靠 StackWidget 隐藏
-        }
     }
-
-    // // =========================================================
-    // // 3. 初始化标尺
-    // // =========================================================
-    // m_ruler = new RulerWidget(ui->pagePanorama); // 确保父对象正确
-    // m_ruler->setAttribute(Qt::WA_NativeWindow, false); // 确保关闭原生窗口属性
-    // m_ruler->setRange(26.0);
-    // m_ruler->hide();
-    // m_ruler->raise();
+    
 
     // 默认显示第一页
     ui->stackVideoMode->setCurrentIndex(0);
@@ -129,29 +85,48 @@ VideoPanorama::~VideoPanorama()
     delete ui;
 }
 
+QString VideoPanorama::getCamWsUrl(int camId)
+{
+    // 从 config.ini 读取配置
+        // 路径：可执行文件同级目录下的 config.ini
+        QString configPath = QCoreApplication::applicationDirPath() + "/config.ini";
+        QSettings settings(configPath, QSettings::IniFormat);
+
+        // 键名规则：Cameras/Cam1, Cameras/Cam2 ...
+        QString key = QString("Cameras/Cam%1").arg(camId);
+
+        // 默认地址 (使用 Demo 地址)
+        QString defaultUrl = "ws://192.168.100.5:8020/ws/subscribe";
+
+        // 读取配置，如果不存在则使用默认值
+        QString url = settings.value(key, defaultUrl).toString();
+
+        // qDebug() << "Get Cam" << camId << "URL:" << url;
+        return url;
+}
+
 void VideoPanorama::switchMode(int pageIndex)
 {
+    // 1. 【先断开旧连接】防止信号重复叠加
+    // 断开 m_Client 的所有信号连接
+    m_Client->disconnect();
+
     if (pageIndex == 0) {
         // --- 全景模式 ---
         m_isPanoramaMode = true;
         ui->stackVideoMode->setCurrentIndex(0);
-        m_player->play();
-
-        for(int i=0; i<3; i++) m_multiPlayers[i]->pause();
 
     } else {
         // --- 三摄模式 ---
         m_isPanoramaMode = false;
 
-        // 恢复高度限制
+        // 恢复高度
         this->setMinimumHeight(0);
         this->setMaximumHeight(QWIDGETSIZE_MAX);
 
         ui->stackVideoMode->setCurrentIndex(1);
-        m_player->pause();
 
-
-        // 计算相机ID
+        // 计算当前页显示的相机ID
         int startCamId = (pageIndex - 1) * 3 + 1;
 
         for(int i = 0; i < 3; i++)
@@ -159,13 +134,49 @@ void VideoPanorama::switchMode(int pageIndex)
             int currentCamId = startCamId + i;
 
             if (currentCamId <= 13) {
-                m_multiVideoWidgets[i]->parentWidget()->show(); // 显示整个容器
+                // 显示窗口
+                m_multiVideoWidgets[i]->parentWidget()->show();
+                m_multiVideoWidgets[i]->show(); // 【确保 Widget 本身也 Show】
                 m_multiLabels[i]->setText(QString("相机 %1").arg(currentCamId));
-                m_multiPlayers[i]->play();
+
+                // 红色高亮演示
+                m_multiLabels[i]->setStyleSheet("color: white; font-size: 14px; font-weight: bold;");
             } else {
-                m_multiVideoWidgets[i]->parentWidget()->hide(); // 隐藏整个容器
-                m_multiPlayers[i]->pause();
+                m_multiVideoWidgets[i]->parentWidget()->hide();
             }
+        }
+
+        // ==========================================================
+        // 【核心修改】连接 WebSocket 数据流 -> 视频窗口
+        // ==========================================================
+
+        // 假设后端只有 1 个测试视频流，我们把它连到当前页的第 1 个窗口上 (即 m_multiVideoWidgets[0])
+        // 这样点击"相机1"时，相机1会有画面。点击"相机4"时，相机4会有画面。
+
+        // 1. 连接服务器 (测试地址)
+        // 这里的 url 根据您的后端实际情况填写
+        QString wsUrl = QString("ws://127.0.0.1:8020/ws/subscribe/camera/%1").arg(pageIndex);
+        // 或者固定测试地址:
+        // QString wsUrl = "ws://192.168.100.5:8020/ws/subscribe";
+
+        m_Client->connectToServer(wsUrl);
+
+        // 1. 先断开旧连接 (防止多次 connect 导致闪烁或崩溃)
+        m_Client->disconnect(this);
+        for(int i=0; i<3; i++) {
+        m_Client->disconnect(m_multiVideoWidgets[i]);
+        }
+
+        // 2. 建立新连接 (直接连到 Widget 的槽函数，不要用 Lambda)
+        // 将数据流连到第一个窗口 (相机1)
+        connect(m_Client, &WebSocketClient::sendBynariesToPlayer,
+             m_multiVideoWidgets[0], &StreamVideoWidget::receiveFrameData);
+
+        // 设置标签颜色
+        m_multiLabels[0]->setStyleSheet("color: red; font-size: 14px; font-weight: bold;");
+        // 强制刷新布局
+        if (ui->pageMultiCam->layout()) {
+            ui->pageMultiCam->layout()->activate();
         }
     }
 
@@ -222,5 +233,8 @@ void VideoPanorama::hideEvent(QHideEvent *event)
     QWidget::hideEvent(event);
 }
 
-// (辅助函数 copyResourceToTemp 已不再使用，若需要可保留)
-QString VideoPanorama::copyResourceToTemp(QString resourcePath) { return ""; }
+void VideoPanorama::adjustHeightToWidth()
+{
+    // 如果需要维持比例，可以在这里实现
+    // 目前保持原样
+}

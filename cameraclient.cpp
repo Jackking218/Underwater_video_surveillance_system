@@ -99,23 +99,37 @@ void CameraClient::sendPostRequest(const QString &endpoint, const QJsonObject &j
     QUrl url(m_baseUrl + endpoint);
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
+    qDebug()<<"url:"<<url;
     QJsonDocument doc(json);
+    qDebug() << "发送 POST 数据:" << doc.toJson(QJsonDocument::Compact); // 加上这一行
     QByteArray postData = doc.toJson();
-
+    qDebug()<<"json wei"<<"/n"<<postData;
     QNetworkReply *reply = m_manager->post(request, postData);
 
     // 使用 Lambda 处理响应
     connect(reply, &QNetworkReply::finished, this, [=]() {
         reply->deleteLater(); // 稍后自动释放
 
+        // 获取 HTTP 状态码
+        int statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
         if (reply->error() == QNetworkReply::NoError) {
             QByteArray respData = reply->readAll();
             QJsonDocument respDoc = QJsonDocument::fromJson(respData);
             emit controlResult(true, endpoint, respDoc.object(), "OK");
         } else {
-            // 处理 HTTP 错误 (400, 404, 500, 503)
-            QString errStr = QString("HTTP Error %1: %2").arg(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt()).arg(reply->errorString());
+            // 1. 读取服务器返回的报错详情 (这是解决 422 的关键)
+            QByteArray serverResp = reply->readAll();
+            qDebug() << "--------------------------------------------------";
+            qDebug() << "POST 请求失败: " << endpoint;
+            qDebug() << "HTTP 状态码: " << statusCode;
+            qDebug() << "服务器返回详情: " << serverResp; // <--- 重点看这行输出！
+            qDebug() << "--------------------------------------------------";
+
+            // 2. 构造错误信息
+            QString errStr = QString("HTTP Error %1: %2").arg(statusCode).arg(reply->errorString());
+
+            // 3. 发送信号通知 UI
             emit controlResult(false, endpoint, QJsonObject(), errStr);
         }
     });
@@ -207,7 +221,7 @@ void CameraClient::startMjpegStream()
     m_mjpegReply = m_manager->get(request);
 
     connect(m_mjpegReply, &QNetworkReply::readyRead, this, &CameraClient::handleMjpegReadyRead);
-    connect(m_mjpegReply, &QNetworkReply::errorOccurred, this, [=](QNetworkReply::NetworkError){
+    connect(m_mjpegReply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), this, [=](QNetworkReply::NetworkError){
         emit controlResult(false, "/mjpeg", QJsonObject(), m_mjpegReply ? m_mjpegReply->errorString() : QStringLiteral("stream error"));
     });
     connect(m_mjpegReply, &QNetworkReply::finished, this, [=]() {

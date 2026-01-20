@@ -16,9 +16,7 @@ namespace Ui { class DataView; }
 QT_END_NAMESPACE
 
 
-QT_BEGIN_NAMESPACE
-class QChart;
-QT_END_NAMESPACE
+using namespace QtCharts;
 
 class DataView : public QWidget
 {
@@ -103,6 +101,7 @@ private slots:
     void onSnapshotReceived(const QPixmap &pixmap);
     void onServiceInfoReceived(const ServiceInfo &info);
     void onHealthInfoReceived(const HealthInfo &info);
+    void on_btnCam1_clicked();
 };
 
 #endif // DATAVIEW_H

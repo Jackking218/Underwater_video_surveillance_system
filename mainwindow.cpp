@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QImageReader>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -7,7 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     //启动全屏
-    this->showFullScreen();
+    //this->showFullScreen();
     this->setMinimumSize(1280, 720);
 
     connect(ui->widgetHeader,&HeaderBar::sigPageChanged,this,[=](int index){
@@ -20,6 +22,8 @@ MainWindow::MainWindow(QWidget *parent)
     
     ui->widgetRuler->setRange(26.0);
     ui->widgetRuler->show();
+    qDebug() << "Supported Image Formats:" << QImageReader::supportedImageFormats();
+
 }
 
 MainWindow::~MainWindow()

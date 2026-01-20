@@ -1,6 +1,12 @@
 #include "dbmanager.h"
 #include <QLibrary>
 #include <QLibraryInfo>
+#include <QDebug>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QSettings>
+#include <QCoreApplication>
+#include <cmath> // 引入 cmath 以使用 std::isnan 和 std::isinf
 // 获取单例
 DBManager& DBManager::instance()
 {
@@ -43,7 +49,11 @@ bool DBManager::connectToDb()
 
     // 2. 配置 MySQL 连接
     qDebug() << "可用数据库驱动:" << QSqlDatabase::drivers();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     qDebug() << "插件路径:" << QLibraryInfo::path(QLibraryInfo::PluginsPath);
+#else
+    qDebug() << "插件路径:" << QLibraryInfo::location(QLibraryInfo::PluginsPath);
+#endif
     if(QSqlDatabase::contains("mysql_conn"))
     {
         m_db = QSqlDatabase::database("mysql_conn");

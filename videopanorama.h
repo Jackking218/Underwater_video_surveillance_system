@@ -2,14 +2,13 @@
 #define VIDEOPANORAMA_H
 
 #include <QWidget>
-#include <QMediaPlayer>
-#include <QVideoWidget>
-#include <QAudioOutput>
 #include <QFile>
 #include <QLabel>
 #include <QTemporaryFile>
 #include <QResizeEvent>
 
+#include "websocketclient.h"
+#include "streamvideowidget.h"
 
 namespace Ui {
 class VideoPanorama;
@@ -39,25 +38,25 @@ private:
     Ui::VideoPanorama *ui;
 
     //--定义播放器组件----
-    QMediaPlayer *m_player;
-    QVideoWidget *m_videoWidget; // 视频显示窗口 (黑窗口)
-    QAudioOutput *m_audioOutput; // 音频输出
+    StreamVideoWidget *m_videoWidget; // 全景视频显示窗口
 
     // 视频原始尺寸 (用于计算比例)
     const double VIDEO_WIDTH = 7680.0;
     const double VIDEO_HEIGHT = 1600.0;
 
-    // 辅助函数：将资源文件复制到本地临时目录
-    QString copyResourceToTemp(QString resourcePath);
-
     // 当前模式记录
     bool m_isPanoramaMode;
-    // bool m_rulerChecked; // 已移除
 
-    QMediaPlayer *m_multiPlayers[3];      // 3个播放器
-    QVideoWidget *m_multiVideoWidgets[3]; // 3个显示窗口
+    StreamVideoWidget *m_multiVideoWidgets[3]; // 3个显示窗口
     QLabel *m_multiLabels[3];             // 3个相机号标签
-    QAudioOutput *m_multiAudio[3];        // 3个音频输出
+    
+    // WebSocket Clients
+    // 索引 1-13 对应相机 1-13, 0 可用于全景或其他用途
+    //WebSocketClient *m_camClients[14];
+    WebSocketClient *m_Client;
+
+    // 辅助函数：获取相机的 WebSocket URL
+    QString getCamWsUrl(int camId);
 };
 
 #endif // VIDEOPANORAMA_H

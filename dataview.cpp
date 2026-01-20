@@ -18,6 +18,20 @@ DataView::DataView(QWidget *parent)
 {
     ui->setupUi(this);
 
+    // 强制设置左右布局比例为 2:8
+    // 注意：setStretch 生效的前提是子控件的 SizePolicy 允许伸缩
+    ui->horizontalLayout->setStretch(0, 2);
+    ui->horizontalLayout->setStretch(1, 8);
+    
+    // 同时设置 SizePolicy 的 stretch 因子，双重保险
+    QSizePolicy spLeft = ui->widgetCameraArea->sizePolicy();
+    spLeft.setHorizontalStretch(2);
+    ui->widgetCameraArea->setSizePolicy(spLeft);
+    
+    QSizePolicy spRight = ui->widgetStatsArea->sizePolicy();
+    spRight.setHorizontalStretch(8);
+    ui->widgetStatsArea->setSizePolicy(spRight);
+
     initTableStyles();  // 准备表格
     initChartStyles();  // 准备图表
 
@@ -140,7 +154,7 @@ DataView::DataView(QWidget *parent)
     ui->btnPanorama->setChecked(true); // 默认全景
 
     // 3. 连接信号
-    connect(camGroup, &QButtonGroup::idClicked, this, [=](int id){
+    connect(camGroup, QOverload<int>::of(&QButtonGroup::buttonClicked), this, [=](int id){
         if (id == 0) {
             emit sigSwitchVideoMode(0);
         } else {
@@ -156,7 +170,7 @@ DataView::DataView(QWidget *parent)
     // 1. 初始化相机接口客户端
     // ===============================================
     m_api = new CameraClient(this);
-    m_api->setBaseUrl("http://127.0.0.1:8080");
+    m_api->setBaseUrl("http://127.0.0.1:8020");
 
     // 2. 连接通用结果信号 -> 处理回调函数
     connect(m_api, &CameraClient::controlResult, this, &DataView::onApiResult);
@@ -177,22 +191,22 @@ DataView::DataView(QWidget *parent)
     // 【新增】连接设置页面的按钮信号
     // ===============================================
 
-    // --- 图像采集 ---
-    connect(ui->btnSetFps, &QPushButton::clicked, this, &DataView::on_btnSetFps_clicked);
-    connect(ui->btnSetExposure, &QPushButton::clicked, this, &DataView::on_btnSetExposure_clicked);
-    connect(ui->btnSetGain, &QPushButton::clicked, this, &DataView::on_btnSetGain_clicked);
-    connect(ui->btnSetZoom, &QPushButton::clicked, this, &DataView::on_btnSetZoom_clicked);
-    connect(ui->btnSetFormat, &QPushButton::clicked, this, &DataView::on_btnSetFormat_clicked);
+//    // --- 图像采集 ---
+//    connect(ui->btnSetFps, &QPushButton::clicked, this, &DataView::on_btnSetFps_clicked);
+//    connect(ui->btnSetExposure, &QPushButton::clicked, this, &DataView::on_btnSetExposure_clicked);
+//    connect(ui->btnSetGain, &QPushButton::clicked, this, &DataView::on_btnSetGain_clicked);
+//    connect(ui->btnSetZoom, &QPushButton::clicked, this, &DataView::on_btnSetZoom_clicked);
+//    connect(ui->btnSetFormat, &QPushButton::clicked, this, &DataView::on_btnSetFormat_clicked);
 
-    // --- 触发设置 ---
-    connect(ui->btnSetTrigMode, &QPushButton::clicked, this, &DataView::on_btnSetTrigMode_clicked);
-    connect(ui->btnSetTrigSource, &QPushButton::clicked, this, &DataView::on_btnSetTrigSource_clicked);
-    connect(ui->btnSetTrigActive, &QPushButton::clicked, this, &DataView::on_btnSetTrigActive_clicked);
+//    // --- 触发设置 ---
+//    connect(ui->btnSetTrigMode, &QPushButton::clicked, this, &DataView::on_btnSetTrigMode_clicked);
+//    connect(ui->btnSetTrigSource, &QPushButton::clicked, this, &DataView::on_btnSetTrigSource_clicked);
+//    connect(ui->btnSetTrigActive, &QPushButton::clicked, this, &DataView::on_btnSetTrigActive_clicked);
 
-    // --- OSD与抓拍 ---
-    connect(ui->btnSetCrosshair, &QPushButton::clicked, this, &DataView::on_btnSetCrosshair_clicked);
-    connect(ui->btnPickColor, &QPushButton::clicked, this, &DataView::on_btnPickColor_clicked);
-    connect(ui->btnSnapshot, &QPushButton::clicked, this, &DataView::on_btnSnapshot_clicked);
+//    // --- OSD与抓拍 ---
+//    connect(ui->btnSetCrosshair, &QPushButton::clicked, this, &DataView::on_btnSetCrosshair_clicked);
+//    connect(ui->btnPickColor, &QPushButton::clicked, this, &DataView::on_btnPickColor_clicked);
+//    connect(ui->btnSnapshot, &QPushButton::clicked, this, &DataView::on_btnSnapshot_clicked);
 
     // --- 新增: GET与Health测试按钮 ---
     connect(ui->btnget, &QPushButton::clicked, this, [=](){ m_api->getServiceConfig(); });
@@ -502,7 +516,7 @@ void DataView::on_btnSetExposure_clicked()
 void DataView::on_btnSetGain_clicked()
 {
     bool isGlobal = ui->chkGlobalScope->isChecked();
-    int camId = ui->sbTargetCamId->value();
+    int camId = ui->sbTargetCamId->value()-1;
     float gain = ui->dsbGain->value();
     m_api->setGain(isGlobal, camId, gain);
 }
@@ -657,4 +671,11 @@ void DataView::onHealthInfoReceived(const HealthInfo &info)
             .arg(info.pipeline.running ? "OK" : "Stopped");
 
      ui->txtApiLog->append(msg);
+}
+
+
+
+void DataView::on_btnCam1_clicked()
+{
+
 }
