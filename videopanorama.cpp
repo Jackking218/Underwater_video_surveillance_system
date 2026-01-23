@@ -11,6 +11,7 @@
 #include <QPoint>
 #include <QDebug>
 #include <QSettings>
+#include "streamvideowidget.h"
 
 VideoPanorama::VideoPanorama(QWidget *parent)
     : QWidget(parent)
@@ -37,7 +38,7 @@ VideoPanorama::VideoPanorama(QWidget *parent)
 
     // TODO: 全景视频 WebSocket Client 初始化
     // m_panoramaClient = new WebSocketClient(this);
-    m_Client = new WebSocketClient(this);
+    m_panoramaClient = new WebSocketClient(this);
 
     // =========================================================
     // 2. 初始化三摄分屏播放器
@@ -50,6 +51,12 @@ VideoPanorama::VideoPanorama(QWidget *parent)
         layout->setContentsMargins(20, 20, 20, 20);
     }
 
+    m_camClients[0] = nullptr;
+
+    for(int i = 1; i <= 13; i++) {
+        m_camClients[i] = new WebSocketClient(this);
+    }
+
     for (int i = 0; i < 3; i++) {
         // 创建垂直容器 (上视频，下标签)
         QWidget *container = new QWidget(ui->pageMultiCam);
@@ -59,7 +66,6 @@ VideoPanorama::VideoPanorama(QWidget *parent)
 
         // 创建视频窗口 (StreamVideoWidget)
         m_multiVideoWidgets[i] = new StreamVideoWidget(container);
-        // m_multiVideoWidgets[i]->setStyleSheet("background-color: black;"); // 默认已黑底
 
         // 创建标签
         m_multiLabels[i] = new QLabel(container);
@@ -75,6 +81,8 @@ VideoPanorama::VideoPanorama(QWidget *parent)
         ui->pageMultiCam->layout()->addWidget(container);
     }
     
+    m_cameraActiveFlags.resize(14);
+    m_cameraActiveFlags.fill(false);
 
     // 默认显示第一页
     ui->stackVideoMode->setCurrentIndex(0);
@@ -107,84 +115,126 @@ QString VideoPanorama::getCamWsUrl(int camId)
 
 void VideoPanorama::switchMode(int pageIndex)
 {
-    // 1. 【先断开旧连接】防止信号重复叠加
-    // 断开 m_Client 的所有信号连接
-    m_Client->disconnect();
-
+    for (int i = 0; i < 3; i++) {
+        if (m_multiVideoWidgets[i]) {
+            m_multiVideoWidgets[i]->setAcceptFrames(false);
+            m_multiVideoWidgets[i]->clearFrame();
+        }
+    }
+    m_cameraActiveFlags.fill(false);
     if (pageIndex == 0) {
-        // --- 全景模式 ---
+        // 全景模式：只有 ID 0 活跃
+        m_cameraActiveFlags[0] = true;
+    } else {
+        // 三摄模式：计算当前页的 3 个相机 ID
+        int startCamId = (pageIndex - 1) * 3 + 1;
+        for (int i = 0; i < 3; i++) {
+            int camId = startCamId + i;
+            if (camId <= 13) {
+                m_cameraActiveFlags[camId] = true;
+            }
+        }
+    }
+
+    if (m_cameraActiveFlags[0]) {
         m_isPanoramaMode = true;
         ui->stackVideoMode->setCurrentIndex(0);
-
-    } else {
-        // --- 三摄模式 ---
+        // 连接全景...
+    } else{
         m_isPanoramaMode = false;
-
-        // 恢复高度
         this->setMinimumHeight(0);
         this->setMaximumHeight(QWIDGETSIZE_MAX);
 
         ui->stackVideoMode->setCurrentIndex(1);
-
-        // 计算当前页显示的相机ID
-        int startCamId = (pageIndex - 1) * 3 + 1;
-
-        for(int i = 0; i < 3; i++)
+        int startCamId = (pageIndex -1)*3+1;
+        for(int i=0; i<3; i++)
         {
             int currentCamId = startCamId + i;
 
             if (currentCamId <= 13) {
-                // 显示窗口
+                // 相机存在：显示窗口
                 m_multiVideoWidgets[i]->parentWidget()->show();
-                m_multiVideoWidgets[i]->show(); // 【确保 Widget 本身也 Show】
+                m_multiVideoWidgets[i]->show();
                 m_multiLabels[i]->setText(QString("相机 %1").arg(currentCamId));
 
-                // 红色高亮演示
-                m_multiLabels[i]->setStyleSheet("color: white; font-size: 14px; font-weight: bold;");
+                m_multiVideoWidgets[i]->setAcceptFrames(true);
+                m_multiVideoWidgets[i]->setFrameToken(++m_frameTokenCounter);
+
+                // 【重要】在建立新连接前，先清空画面，防止上一页的残影
+                // 只有当即将建立连接时，这一步才会被后面的视频流覆盖
+                // 如果该相机没信号，这里就保持黑屏，非常合理
+                QPixmap blackPix(m_multiVideoWidgets[i]->size());
+                blackPix.fill(Qt::black);
+                m_multiVideoWidgets[i]->setPixmap(blackPix);
+
             } else {
+                // 相机不存在 (14, 15)：隐藏窗口
                 m_multiVideoWidgets[i]->parentWidget()->hide();
             }
         }
-
-        // ==========================================================
-        // 【核心修改】连接 WebSocket 数据流 -> 视频窗口
-        // ==========================================================
-
-        // 假设后端只有 1 个测试视频流，我们把它连到当前页的第 1 个窗口上 (即 m_multiVideoWidgets[0])
-        // 这样点击"相机1"时，相机1会有画面。点击"相机4"时，相机4会有画面。
-
-        // 1. 连接服务器 (测试地址)
-        // 这里的 url 根据您的后端实际情况填写
-        QString wsUrl = QString("ws://127.0.0.1:8020/ws/subscribe/camera/%1").arg(pageIndex);
-        // 或者固定测试地址:
-        // QString wsUrl = "ws://192.168.100.5:8020/ws/subscribe";
-
-        m_Client->connectToServer(wsUrl);
-
-        // 1. 先断开旧连接 (防止多次 connect 导致闪烁或崩溃)
-        m_Client->disconnect(this);
-        for(int i=0; i<3; i++) {
-        m_Client->disconnect(m_multiVideoWidgets[i]);
+        // 强制重置布局比例
+        QHBoxLayout *layout = qobject_cast<QHBoxLayout*>(ui->pageMultiCam->layout());
+        if (layout) {
+            layout->setStretch(0, 1);
+            layout->setStretch(1, 1);
+            layout->setStretch(2, 1);
+            layout->activate();
         }
+    }
+    for (int camId = 1; camId <= 13; camId++) {
+        WebSocketClient *client = m_camClients[camId];
+        if (!client) continue;
 
-        // 2. 建立新连接 (直接连到 Widget 的槽函数，不要用 Lambda)
-        // 将数据流连到第一个窗口 (相机1)
-        connect(m_Client, &WebSocketClient::sendBynariesToPlayer,
-             m_multiVideoWidgets[0], &StreamVideoWidget::receiveFrameData);
+        if (m_cameraActiveFlags[camId]) {
+            // ---> 情况 A: 该相机需要显示 <---
 
-        // 设置标签颜色
-        m_multiLabels[0]->setStyleSheet("color: red; font-size: 14px; font-weight: bold;");
-        // 强制刷新布局
-        if (ui->pageMultiCam->layout()) {
-            ui->pageMultiCam->layout()->activate();
+            // 1. 断开旧信号 (防止重复绑定)
+            client->disconnect();
+
+            // 2. 获取地址并连接
+            // 优化：如果已经连接且 URL 没变，可以不调 connectToServer
+            QString url = getCamWsUrl(camId);
+            client->connectToServer(url);
+
+            // 3. 计算它应该显示在哪个窗口 (0, 1, 2)
+            // 算法：(camId - 1) % 3
+            int widgetIndex = (camId - 1) % 3;
+
+            if (widgetIndex >= 0 && widgetIndex < 3) {
+                StreamVideoWidget *widget = m_multiVideoWidgets[widgetIndex];
+                quint64 token = widget->frameToken();
+                connect(client, &WebSocketClient::sendBynariesToPlayer, widget,
+                        [widget, token](const QByteArray &data){
+                            if (widget->frameToken() == token) {
+                                widget->receiveFrameData(data);
+                            }
+                        });
+
+            qDebug() << "相机" << camId << "绑定到窗口" << widgetIndex;
+            }
+
+        } else {
+            client->disconnect();
+            client->disconnectFromServer();
         }
     }
 
-    // 强制重绘
+    // 触发重绘
     QResizeEvent event(size(), size());
     resizeEvent(&event);
 }
 
+void VideoPanorama::pauseFramesFor(int ms)
+{
+    for (int i = 0; i < 3; i++) {
+        if (m_multiVideoWidgets[i]) {
+            m_multiVideoWidgets[i]->pauseFramesFor(ms);
+        }
+    }
+    if (m_videoWidget) {
+        m_videoWidget->pauseFramesFor(ms);
+    }
+}
 
 void VideoPanorama::resizeEvent(QResizeEvent *event)
 {
@@ -237,4 +287,15 @@ void VideoPanorama::adjustHeightToWidth()
 {
     // 如果需要维持比例，可以在这里实现
     // 目前保持原样
+}
+
+// 判断某个相机是否有视频源需要播放
+bool VideoPanorama::isCameraAvailable(int camId)
+{
+    // --- 目前阶段：只有相机1可用 ---
+    if (camId == 1) return true;
+
+    // --- 未来阶段：所有都可用 ---
+    // return true;
+    return false;
 }

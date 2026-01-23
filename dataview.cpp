@@ -7,6 +7,7 @@
 #include "Database/dbmanager.h"
 #include <QSettings>
 #include <QCoreApplication>
+#include "videopanorama.h"
 
 DataView::DataView(QWidget *parent)
     : QWidget(parent)
@@ -154,12 +155,14 @@ DataView::DataView(QWidget *parent)
     ui->btnPanorama->setChecked(true); // 默认全景
 
     // 3. 连接信号
-    connect(camGroup, QOverload<int>::of(&QButtonGroup::buttonClicked), this, [=](int id){
+    connect(camGroup, &QButtonGroup::idClicked, this, [=](int id){
         if (id == 0) {
+            m_currentVideoPageIndex = 0;
             emit sigSwitchVideoMode(0);
         } else {
             // 计算页码 (1-3 -> 页1, 4-6 -> 页2 ...)  算法： (id - 1) / 3 + 1
             int pageIndex = (id - 1) / 3 + 1;
+            m_currentVideoPageIndex = pageIndex;
             emit sigSwitchVideoMode(pageIndex);
         }
     });
@@ -191,30 +194,10 @@ DataView::DataView(QWidget *parent)
     // 【新增】连接设置页面的按钮信号
     // ===============================================
 
-//    // --- 图像采集 ---
-//    connect(ui->btnSetFps, &QPushButton::clicked, this, &DataView::on_btnSetFps_clicked);
-//    connect(ui->btnSetExposure, &QPushButton::clicked, this, &DataView::on_btnSetExposure_clicked);
-//    connect(ui->btnSetGain, &QPushButton::clicked, this, &DataView::on_btnSetGain_clicked);
-//    connect(ui->btnSetZoom, &QPushButton::clicked, this, &DataView::on_btnSetZoom_clicked);
-//    connect(ui->btnSetFormat, &QPushButton::clicked, this, &DataView::on_btnSetFormat_clicked);
-
-//    // --- 触发设置 ---
-//    connect(ui->btnSetTrigMode, &QPushButton::clicked, this, &DataView::on_btnSetTrigMode_clicked);
-//    connect(ui->btnSetTrigSource, &QPushButton::clicked, this, &DataView::on_btnSetTrigSource_clicked);
-//    connect(ui->btnSetTrigActive, &QPushButton::clicked, this, &DataView::on_btnSetTrigActive_clicked);
-
-//    // --- OSD与抓拍 ---
-//    connect(ui->btnSetCrosshair, &QPushButton::clicked, this, &DataView::on_btnSetCrosshair_clicked);
-//    connect(ui->btnPickColor, &QPushButton::clicked, this, &DataView::on_btnPickColor_clicked);
-//    connect(ui->btnSnapshot, &QPushButton::clicked, this, &DataView::on_btnSnapshot_clicked);
-
     // --- 新增: GET与Health测试按钮 ---
     connect(ui->btnget, &QPushButton::clicked, this, [=](){ m_api->getServiceConfig(); });
     connect(ui->btnhealth, &QPushButton::clicked, this, [=](){ m_api->getHealthStatus(); });
 
-    // ===============================================
-    // 【新增】启动时自动获取一次当前配置
-    // ===============================================
     // 连接获取配置的成功信号 -> 更新UI
     connect(m_api, &CameraClient::serviceInfoReceived, this, &DataView::onServiceInfoReceived);
     connect(m_api, &CameraClient::healthInfoReceived, this, &DataView::onHealthInfoReceived);
@@ -470,6 +453,17 @@ void DataView::onApiResult(bool success, const QString &apiName, const QJsonObje
         msg = QString("接口调用失败！\nAPI: %1\n错误信息: %2").arg(apiName).arg(errorMsg);
     }
 
+    ui->txtApiLog->append(msg);
+
+    if (success && apiName.startsWith("/control/")) {
+        emit sigSwitchVideoMode(m_currentVideoPageIndex);
+    }
+    for (QObject *obj : qApp->topLevelWidgets()) {
+        auto *vp = qobject_cast<VideoPanorama*>(obj);
+        if (vp) {
+            vp->pauseFramesFor(400);
+        }
+    }
     // 弹窗显示 (Information 或 Warning)
     if (success) {
         QMessageBox::information(this, title, msg);
@@ -516,9 +510,10 @@ void DataView::on_btnSetExposure_clicked()
 void DataView::on_btnSetGain_clicked()
 {
     bool isGlobal = ui->chkGlobalScope->isChecked();
-    int camId = ui->sbTargetCamId->value()-1;
+    int camId = ui->sbTargetCamId->value();
     float gain = ui->dsbGain->value();
     m_api->setGain(isGlobal, camId, gain);
+    qDebug() << "按钮被点击了！";
 }
 
 // 4. 设置像素格式
@@ -675,7 +670,5 @@ void DataView::onHealthInfoReceived(const HealthInfo &info)
 
 
 
-void DataView::on_btnCam1_clicked()
-{
 
-}
+

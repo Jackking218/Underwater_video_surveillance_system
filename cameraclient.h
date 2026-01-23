@@ -1,6 +1,5 @@
 #ifndef CAMERACLIENT_H
 #define CAMERACLIENT_H
-
 #include <QObject>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>

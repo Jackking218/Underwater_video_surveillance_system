@@ -24,6 +24,7 @@ HEADERS += \
     Database/dbmanager.h \
     cameraclient.h \
     dataview.h \
+    frameprocessor.h \
     headerbar.h \
     mainwindow.h \
     rulerwidget.h \

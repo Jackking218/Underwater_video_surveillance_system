@@ -26,7 +26,7 @@ HeaderBar::HeaderBar(QWidget *parent)
     group->setExclusive(true); // 开启互斥
     ui->btnPreview->setChecked(true); // 默认选中第一个
 
-     connect(group, QOverload<int>::of(&QButtonGroup::buttonClicked), this, [=](int id){
+    connect(group, &QButtonGroup::idClicked, this, [=](int id){
        emit sigPageChanged(id);
     });
 

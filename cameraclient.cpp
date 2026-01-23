@@ -89,7 +89,7 @@ QJsonObject CameraClient::createBaseJson(bool isGlobal, int cameraId)
         json["scope"] = "global";
     }else{
         json["scope"] = "camera";
-        json["camera_id"] = cameraId;
+        json["camera_id"] = cameraId-1;
     }
     return json;
 }
@@ -221,7 +221,7 @@ void CameraClient::startMjpegStream()
     m_mjpegReply = m_manager->get(request);
 
     connect(m_mjpegReply, &QNetworkReply::readyRead, this, &CameraClient::handleMjpegReadyRead);
-    connect(m_mjpegReply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), this, [=](QNetworkReply::NetworkError){
+    connect(m_mjpegReply, &QNetworkReply::errorOccurred, this, [=](QNetworkReply::NetworkError error){
         emit controlResult(false, "/mjpeg", QJsonObject(), m_mjpegReply ? m_mjpegReply->errorString() : QStringLiteral("stream error"));
     });
     connect(m_mjpegReply, &QNetworkReply::finished, this, [=]() {
@@ -345,6 +345,7 @@ void CameraClient::setGain(bool isGlobal, int cameraId, float gain)
     QJsonObject json = createBaseJson(isGlobal, cameraId);
     json["gain"] = gain;
     sendPostRequest("/control/gain", json);
+    qDebug() << "Sending POST POST /control/gain";
 }
 
 /**

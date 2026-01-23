@@ -15,8 +15,9 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class DataView; }
 QT_END_NAMESPACE
 
-
-using namespace QtCharts;
+QT_BEGIN_NAMESPACE
+class QtCharts;
+QT_END_NAMESPACE
 
 class DataView : public QWidget
 {
@@ -34,6 +35,7 @@ signals:
 private:
     Ui::DataView *ui;
     CameraClient *m_api;
+    int m_currentVideoPageIndex = 0;
     // --- 模拟数据变量 ---
     double m_timeCount;     // 累计时间 (X轴)
     double m_velocity;      // 速度
@@ -101,7 +103,6 @@ private slots:
     void onSnapshotReceived(const QPixmap &pixmap);
     void onServiceInfoReceived(const ServiceInfo &info);
     void onHealthInfoReceived(const HealthInfo &info);
-    void on_btnCam1_clicked();
 };
 
 #endif // DATAVIEW_H

@@ -24,6 +24,8 @@ public:
 
     // 根据宽度计算并更新高度
     void adjustHeightToWidth();
+    bool isCameraAvailable(int camId);
+    void pauseFramesFor(int ms);
 
 public slots:
     // 接收模式切换信号 (0=全景, >0=相机组页码)
@@ -53,10 +55,14 @@ private:
     // WebSocket Clients
     // 索引 1-13 对应相机 1-13, 0 可用于全景或其他用途
     //WebSocketClient *m_camClients[14];
-    WebSocketClient *m_Client;
+    WebSocketClient *m_camClients[14];
+    WebSocketClient *m_panoramaClient; // 全景相机 (独立)
 
     // 辅助函数：获取相机的 WebSocket URL
     QString getCamWsUrl(int camId);
+    //相机标志位
+    QVector<bool> m_cameraActiveFlags;
+    quint64 m_frameTokenCounter = 0;
 };
 
 #endif // VIDEOPANORAMA_H
